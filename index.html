@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MEDVAULT</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#F8F7F5;color:#29272B;font-family:Arial,sans-serif}
+header{background:white;padding:18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eee}
+.logo{font-family:Georgia,serif;font-size:23px;color:#783246;font-weight:bold;cursor:pointer}
+button{border:0;border-radius:10px;padding:12px 16px;cursor:pointer}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:15px}
+nav button{background:#F0E8EB;color:#783246}
+main{max-width:1000px;margin:auto;padding:18px}
+.hero{background:#783246;color:white;padding:35px 25px;border-radius:20px}
+.hero h1{font-size:clamp(28px,5vw,43px)}
+.primary{background:#783246;color:white}
+.hero .primary{background:white;color:#783246}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;margin-top:20px}
+.card{background:white;border:1px solid #E8E2E5;border-radius:15px;padding:22px}
+input,select{padding:12px;width:100%;margin:8px 0;border:1px solid #ddd;border-radius:9px}
+#intro{position:fixed;inset:0;background:#490B20;color:white;display:grid;place-items:center;text-align:center;z-index:10;animation:fade 0.5s 1.4s forwards}
+@keyframes fade{to{opacity:0;visibility:hidden}}
+</style>
+</head>
+<body>
+<div id="intro">
+<div>
+<div style="font-size:75px">⚕</div>
+<h1 style="font-family:Georgia,serif">MEDVAULT</h1>
+<p>LEARN · PRACTICE · MASTER</p>
+<h3>WELCOME TO MEDVAULT</h3>
+</div>
+</div>
+<header>
+<div class="logo" onclick="home()">MEDVAULT</div>
+<button onclick="toggleLang()" id="language">العربية</button>
+</header>
+<nav id="navigation"></nav>
+<main id="app"></main>
+<script>
+let lang="en";
+let semesters=JSON.parse(localStorage.getItem("mv_semesters")||'["Semester 5"]');
+let names={
+en:["Home","Semesters","Lectures","MCQ Practice","Challenge Arena","Study Rooms","Creator Studio"],
+ar:["الرئيسية","السمسترات","المحاضرات","الأسئلة","التحديات","غرف المذاكرة","لوحة الإدارة"]
+};
+function renderNav(){
+document.getElementById("navigation").innerHTML=names[lang].map((n,i)=>'<button onclick="page('+i+')">'+n+'</button>').join("");
+}
+function home(){page(0)}
+function page(i){
+let app=document.getElementById("app");
+if(i===0)app.innerHTML='<div class="hero"><h1>Study Smarter. Master Medicine.</h1><p>Your medical learning space.</p><button class="primary" onclick="page(1)">Explore Semesters</button></div><div class="grid">'+["Lectures & Summaries","MCQ Practice","AI Tutor","Challenge Arena","Study Rooms","My Progress"].map(x=>'<div class="card"><h3>'+x+'</h3><p>MEDVAULT Learning Platform</p></div>').join("")+'</div>';
+else if(i===1)app.innerHTML='<h2>Choose Your Semester</h2><div class="grid">'+semesters.map(s=>'<div class="card"><h3>'+s+'</h3><button class="primary" onclick="page(2)">Explore</button></div>').join("")+'</div>';
+else if(i===6)app.innerHTML='<h2>Creator Studio</h2><div class="card"><h3>Add Semester</h3><input id="sem" placeholder="Semester 6"><button class="primary" onclick="addSemester()">Add Semester</button></div><p>Local demo only. Content is saved on this device.</p>';
+else app.innerHTML='<div class="card"><h2>'+names[lang][i]+'</h2><p>This section is being developed.</p></div>';
+}
+function addSemester(){
+let s=document.getElementById("sem").value.trim();
+if(!s)return;
+if(!semesters.includes(s))semesters.push(s);
+localStorage.setItem("mv_semesters",JSON.stringify(semesters));
+page(1);
+}
+function toggleLang(){
+lang=lang==="en"?"ar":"en";
+document.getElementById("language").textContent=lang==="en"?"العربية":"English";
+renderNav();home();
+}
+renderNav();home();
+setTimeout(()=>document.getElementById("intro").remove(),2000);
+</script>
+</body>
+</html>
